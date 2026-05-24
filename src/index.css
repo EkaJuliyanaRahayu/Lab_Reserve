@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --routine: 0 84% 60%;
+    --routine-foreground: 0 86% 97%;
+    --routine-subtle: 0 86% 97%;
+    --routine-border: 0 76% 90%;
+
+    --booking: 142 71% 45%;
+    --booking-foreground: 144 61% 20%;
+    --booking-subtle: 138 76% 97%;
+    --booking-border: 142 69% 90%;
+
+    --pending: 38 92% 50%;
+    --pending-foreground: 32 81% 29%;
+    --pending-subtle: 48 96% 95%;
+    --pending-border: 45 93% 85%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.75rem;
+    --radius-inner: 0.5rem;
+
+    --brand-curve: cubic-bezier(0.19, 1, 0.22, 1);
+    --brand-duration: 300ms;
+
+    --shadow-card: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+    --shadow-elevated: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+    --shadow-modal: 0 20px 60px -12px rgba(15, 23, 42, 0.15), 0 8px 20px -8px rgba(15, 23, 42, 0.08);
+
+    --sidebar-background: 220 14% 96%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 92%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 221 83% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+  h1, h2, h3, h4 {
+    @apply tracking-tight font-semibold;
+  }
+}
+
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@keyframes subtle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes subtle-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+.animate-conflict {
+  animation: subtle-shake 0.4s ease-in-out, subtle-pulse 1.5s ease-in-out infinite;
+}
