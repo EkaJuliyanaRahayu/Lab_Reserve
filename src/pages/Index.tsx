@@ -1,4 +1,4 @@
-import { useRole } from "@/hooks/useRole";
+import { useRole } from "@/hooks/useAuth";
 import AdminDashboard from "./AdminDashboard";
 import GuruDashboard from "./GuruDashboard";
 

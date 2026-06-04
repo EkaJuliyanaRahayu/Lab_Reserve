@@ -1,53 +1,63 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { useRole } from "@/hooks/useRole";
+import { useRole, useAuth } from "@/hooks/useAuth";
 import {
-  LayoutDashboard,
-  ClipboardList,
-  Building2,
-  User,
-  ChevronLeft,
-  Menu,
-  ArrowLeftRight,
+  LayoutDashboard, ClipboardList, Building2,
+  User, ChevronLeft, Menu, LogOut,
 } from "lucide-react";
 
 const adminNavItems = [
-  { to: "/", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/booking", icon: ClipboardList, label: "Peminjaman" },
-  { to: "/labs", icon: Building2, label: "Data Lab" },
+  { to: "/",        icon: LayoutDashboard, label: "Dashboard"  },
+  { to: "/booking", icon: ClipboardList,   label: "Peminjaman" },
+  { to: "/labs",    icon: Building2,       label: "Data Lab"   },
+  { to: "/profil",  icon: User,            label: "Profil"     }, // ← BARU untuk admin
 ];
 
 const guruNavItems = [
-  { to: "/", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/booking", icon: ClipboardList, label: "Peminjaman" },
-  { to: "/labs", icon: User, label: "Profil" },
+  { to: "/",        icon: LayoutDashboard, label: "Dashboard"  },
+  { to: "/booking", icon: ClipboardList,   label: "Peminjaman" },
+  { to: "/profil",  icon: User,            label: "Profil"     }, // ← sudah benar
 ];
 
 export default function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const location = useLocation();
-  const { role, setRole, currentUser } = useRole();
+  const location                  = useLocation();
+  const navigate                  = useNavigate();
+  const { role, currentUser }     = useRole();
+  const { logout }                = useAuth();
+
+  function handleLogout() {
+    logout();
+    navigate("/login", { replace: true });
+  }
+
+  const navItems = role === "admin" ? adminNavItems : guruNavItems;
 
   return (
     <>
+      {/* ── Hamburger mobile ── */}
       <button
         className="fixed top-4 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-lg bg-card shadow-elevated md:hidden"
         onClick={() => setCollapsed(!collapsed)}
+        aria-label="Toggle menu"
       >
         <Menu className="h-5 w-5 text-foreground" />
       </button>
 
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-sidebar transition-all duration-300",
-          collapsed ? "w-16" : "w-60",
-          "max-md:translate-x-[-100%]",
-          !collapsed && "max-md:translate-x-0"
-        )}
-      >
-        <div className={cn("flex h-16 items-center border-b border-border px-4", collapsed && "justify-center")}>
-          {!collapsed && (
+      <aside className={cn(
+        "fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-sidebar transition-all duration-300",
+        collapsed ? "w-16" : "w-60",
+        "max-md:translate-x-[-100%]",
+        !collapsed && "max-md:translate-x-0"
+      )}>
+
+        {/* ── Brand ── */}
+        <div className={cn(
+          "flex h-16 items-center border-b border-border px-4",
+          collapsed && "justify-center"
+        )}>
+          {!collapsed ? (
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                 <Building2 className="h-4 w-4 text-primary-foreground" />
@@ -57,16 +67,16 @@ export default function AppSidebar() {
                 <p className="text-[10px] text-muted-foreground">SMK Manajemen Lab</p>
               </div>
             </div>
-          )}
-          {collapsed && (
+          ) : (
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <Building2 className="h-4 w-4 text-primary-foreground" />
             </div>
           )}
         </div>
 
+        {/* ── Nav items ── */}
         <nav className="flex-1 space-y-1 p-3">
-          {(role === "admin" ? adminNavItems : guruNavItems).map((item) => (
+          {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -84,28 +94,34 @@ export default function AppSidebar() {
           ))}
         </nav>
 
-        {/* Role switcher */}
+        {/* ── Tombol logout ── */}
         {!collapsed && (
           <div className="border-t border-border p-3">
             <button
-              onClick={() => setRole(role === "admin" ? "guru" : "admin")}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors"
+              onClick={handleLogout}
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
             >
-              <ArrowLeftRight className="h-3.5 w-3.5" />
-              Ganti ke {role === "admin" ? "Guru" : "Admin"}
+              <LogOut className="h-3.5 w-3.5" />
+              Keluar
             </button>
           </div>
         )}
 
+        {/* ── Collapse button desktop ── */}
         <div className="border-t border-border p-3 max-md:hidden">
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="flex w-full items-center justify-center rounded-lg py-2 text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors"
+            className="flex w-full items-center justify-center rounded-lg py-2 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
+            aria-label={collapsed ? "Buka sidebar" : "Tutup sidebar"}
           >
-            <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
+            <ChevronLeft className={cn(
+              "h-4 w-4 transition-transform",
+              collapsed && "rotate-180"
+            )} />
           </button>
         </div>
 
+        {/* ── Info user ── */}
         <div className={cn("border-t border-border p-3", collapsed && "px-2")}>
           <div className={cn("flex items-center gap-3", collapsed && "justify-center")}>
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
@@ -113,12 +129,17 @@ export default function AppSidebar() {
             </div>
             {!collapsed && (
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-foreground">{currentUser.name}</p>
-                <p className="truncate text-xs text-muted-foreground">{currentUser.email}</p>
+                <p className="truncate text-sm font-medium text-foreground">
+                  {currentUser.name}
+                </p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {currentUser.email}
+                </p>
               </div>
             )}
           </div>
         </div>
+
       </aside>
     </>
   );

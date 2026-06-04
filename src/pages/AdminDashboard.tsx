@@ -41,10 +41,6 @@ export default function AdminDashboard() {
             <h1 className="text-2xl font-semibold text-foreground">Dashboard Admin</h1>
             <p className="text-sm text-muted-foreground">Kelola peminjaman & persetujuan lab.</p>
           </div>
-          <Button className="gap-2" onClick={() => { setPrefill({}); setFormOpen(true); }}>
-            <Plus className="h-4 w-4" />
-            Pinjam Lab
-          </Button>
         </div>
 
         {/* Stats */}
@@ -53,39 +49,6 @@ export default function AdminDashboard() {
           <StatCard label="Disetujui" value={approvedCount} icon={<ClipboardList className="h-4 w-4 text-booking" />} accent="bg-booking-subtle" />
           <StatCard label="Menunggu" value={pendingCount} icon={<AlertCircle className="h-4 w-4 text-pending" />} accent="bg-pending-subtle" />
         </div>
-
-        {/* Pending approvals */}
-        {pending.length > 0 && (
-          <div>
-            <h2 className="mb-3 text-lg font-semibold text-foreground">Menunggu Persetujuan ({pending.length})</h2>
-            <div className="space-y-3">
-              {pending.map(b => (
-                <div key={b.id} className="flex items-center justify-between rounded-lg border border-pending-border bg-pending-subtle p-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-foreground">{b.teacher}</span>
-                      <StatusBadge status="pending" />
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {getLabName(b.lab_id)} · {b.date} · {String(b.start_hour).padStart(2, "0")}:00–{String(b.end_hour).padStart(2, "0")}:00
-                    </p>
-                    <p className="text-sm text-muted-foreground">{b.purpose}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button size="sm" variant="outline" className="gap-1 text-destructive hover:bg-destructive/10" onClick={() => toast.error("Permintaan ditolak.")}>
-                      <XIcon className="h-3 w-3" />
-                      Tolak
-                    </Button>
-                    <Button size="sm" className="gap-1" onClick={() => toast.success("Permintaan disetujui.")}>
-                      <Check className="h-3 w-3" />
-                      Setujui
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Calendar */}
         <div>

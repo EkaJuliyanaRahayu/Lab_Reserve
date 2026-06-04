@@ -5,7 +5,7 @@ import BookingForm from "@/components/BookingForm";
 import StatCard from "@/components/StatCard";
 import StatusBadge from "@/components/StatusBadge";
 import { bookings, getLabName } from "@/data/mockData";
-import { useRole } from "@/hooks/useRole";
+import { useRole } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { ClipboardList, Clock, AlertCircle, Plus } from "lucide-react";
 
