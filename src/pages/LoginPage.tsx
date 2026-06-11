@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Loader2, AlertCircle, School } from "lucide-react";
+import { toast } from "sonner"; // Tambahkan import toast untuk notifikasi
 
 export default function LoginPage() {
   const navigate  = useNavigate();
@@ -15,6 +16,9 @@ export default function LoginPage() {
   }
 
   // ── State ──────────────────────────────────────────────────────────────────
+  const [isLoginView, setIsLoginView] = useState(true); // true = Login, false = Sign Up
+  
+  const [name,        setName]        = useState(""); // State baru untuk nama
   const [email,       setEmail]       = useState("");
   const [password,    setPassword]    = useState("");
   const [showPass,    setShowPass]    = useState(false);
@@ -29,20 +33,44 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
 
+    // Validasi input
+    if (!isLoginView && !name.trim()) return setError("Nama lengkap wajib diisi.");
     if (!email.trim())    return setError("Alamat email wajib diisi.");
     if (!password.trim()) return setError("Kata sandi wajib diisi.");
 
     setLoading(true);
 
-    const result = await login(email.trim(), password);
-    setLoading(false);
+    if (isLoginView) {
+      // PROSES LOGIN
+      const result = await login(email.trim(), password);
+      setLoading(false);
 
-    if ('message' in result) {
-      setError(result.message);
+      if ('message' in result) {
+        setError(result.message);
+      } else {
+        navigate(from, { replace: true });
+      }
     } else {
-      navigate(from, { replace: true });
+      // SIMULASI PROSES REGISTRASI (Sign Up)
+      setTimeout(() => {
+        setLoading(false);
+        toast.success("Registrasi berhasil! Silakan masuk menggunakan akun baru Anda.");
+        
+        // Kembalikan tampilan ke mode Login setelah berhasil mendaftar
+        setIsLoginView(true);
+        setPassword(""); // Kosongkan password demi keamanan
+      }, 1500); // Simulasi loading 1.5 detik
     }
   }
+
+  // Fungsi untuk reset form saat pindah antara Login & Sign Up
+  const toggleView = () => {
+    setIsLoginView(!isLoginView);
+    setError(null);
+    setName("");
+    setEmail("");
+    setPassword("");
+  };
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
@@ -50,10 +78,10 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         
         {/* Card Portal */}
-        <div className="overflow-hidden rounded-lg bg-white shadow-md border border-slate-200">
+        <div className="overflow-hidden rounded-lg bg-white shadow-md border border-slate-200 transition-all duration-300">
           
           {/* Header Card (Bagian Biru/Primary Sekolah) */}
-          <div className="bg-primary px-6 py-8 text-center sm:px-8">
+          <div className="bg-primary px-6 py-8 text-center sm:px-8 transition-colors">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
               <School className="h-7 w-7 text-white" />
             </div>
@@ -65,14 +93,16 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Form Login */}
+          {/* Form Login / Sign Up */}
           <div className="px-10 py-8 sm:px-10">
-            <div className="mb-6 text-center ">
+            <div className="mb-6 text-center">
               <h2 className="text-lg font-semibold text-slate-900">
-                Login
+                {isLoginView ? "Login" : "Registrasi Akun"}
               </h2>
               <p className="mt-1 text-sm text-slate-500">
-                Silakan masukkan email dan kata sandi Anda.
+                {isLoginView 
+                  ? "Silakan masukkan email dan kata sandi Anda." 
+                  : "Isi data diri Anda untuk membuat akun baru."}
               </p>
             </div>
 
@@ -86,6 +116,24 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit} noValidate className="space-y-5">
               
+              {/* Field Nama (HANYA MUNCUL SAAT SIGN UP) */}
+              {!isLoginView && (
+                <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2">
+                  <label htmlFor="name" className="text-sm font-medium text-slate-700">
+                    Nama Lengkap
+                  </label>
+                  <input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={e => { setName(e.target.value); setError(null); }}
+                    placeholder="Contoh: Budi Santoso"
+                    disabled={loading}
+                    className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-slate-50 disabled:text-slate-500"
+                  />
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <label htmlFor="email" className="text-sm font-medium text-slate-700">
                   Email Terdaftar
@@ -111,7 +159,7 @@ export default function LoginPage() {
                   <input
                     id="password"
                     type={showPass ? "text" : "password"}
-                    autoComplete="current-password"
+                    autoComplete={isLoginView ? "current-password" : "new-password"}
                     value={password}
                     onChange={e => { setPassword(e.target.value); setError(null); }}
                     placeholder="Masukkan kata sandi"
@@ -131,25 +179,44 @@ export default function LoginPage() {
               <div className="pt-2">
                 <Button 
                   type="submit" 
-                  className="w-full text-sm font-semibold tracking-wide h-10" 
+                  className="w-full text-sm font-semibold tracking-wide h-10 transition-all" 
                   disabled={loading}
                 >
                   {loading ? (
                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sedang Memproses...</>
                   ) : (
-                    "MASUK"
+                    isLoginView ? "MASUK" : "DAFTAR SEKARANG"
                   )}
                 </Button>
               </div>
 
             </form>
+
+            {/* Tombol Toggle (Ganti antara Login dan Sign Up) */}
+            <div className="mt-6 text-center text-sm text-slate-600">
+              {isLoginView ? (
+                <p>
+                  Belum memiliki akun?{" "}
+                  <button type="button" onClick={toggleView} className="font-semibold text-primary hover:underline focus:outline-none">
+                    Daftar di sini
+                  </button>
+                </p>
+              ) : (
+                <p>
+                  Sudah memiliki akun?{" "}
+                  <button type="button" onClick={toggleView} className="font-semibold text-primary hover:underline focus:outline-none">
+                    Masuk di sini
+                  </button>
+                </p>
+              )}
+            </div>
+
           </div>
         </div>
 
         {/* Footer */}
         <div className="mt-6 text-center text-xs text-slate-500">
           <p>© {new Date().getFullYear()} SMK Smart Ar-Rahman</p>
-    
         </div>
 
       </div>
