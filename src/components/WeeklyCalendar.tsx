@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { schedules, bookings, labs, DAYS, HOURS, getLabName, type Schedule, type Booking } from "@/data/mockData";
+import { schedules, bookings, DAYS, HOURS, type Schedule, type Booking } from "@/data/mockData";
 import { Plus } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -21,7 +21,7 @@ export default function WeeklyCalendar({ selectedLabId, weekStartDate, onSlotCli
   const slotMap = useMemo(() => {
     const map = new Map<string, SlotData>();
     
-    // Add routine schedules
+    // 1. Tambahkan jadwal rutin statis
     schedules
       .filter(s => s.lab_id === selectedLabId)
       .forEach(s => {
@@ -30,7 +30,7 @@ export default function WeeklyCalendar({ selectedLabId, weekStartDate, onSlotCli
         }
       });
 
-    // Add bookings for this week
+    // 2. Tambahkan booking statis
     bookings
       .filter(b => b.lab_id === selectedLabId && (b.status === 'approved' || b.status === 'pending'))
       .forEach(b => {
@@ -51,7 +51,6 @@ export default function WeeklyCalendar({ selectedLabId, weekStartDate, onSlotCli
     return conflictSlot.dayIndex === dayIndex && hour >= conflictSlot.startHour && hour < conflictSlot.endHour;
   };
 
-  // Check if this is the first hour of a block (for rendering labels)
   const isBlockStart = (dayIndex: number, hour: number, data: SlotData) => {
     const prevKey = `${dayIndex}-${hour - 1}`;
     const prevData = slotMap.get(prevKey);
@@ -69,9 +68,8 @@ export default function WeeklyCalendar({ selectedLabId, weekStartDate, onSlotCli
           <div className="p-2 text-xs font-medium text-muted-foreground border-b border-r border-border">Jam</div>
           {DAYS.map((day, i) => (
             <div key={day} className={cn(
-              "p-2 text-xs font-medium text-center border-b border-border",
-              i < 5 ? "border-r" : "",
-              "text-foreground"
+              "p-2 text-xs font-medium text-center border-b border-border text-foreground",
+              i < 5 ? "border-r" : ""
             )}>
               {day}
             </div>

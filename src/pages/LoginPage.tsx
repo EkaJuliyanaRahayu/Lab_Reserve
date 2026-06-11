@@ -2,7 +2,7 @@ import { useState, FormEvent } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, Monitor, Loader2, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Loader2, AlertCircle, School } from "lucide-react";
 
 export default function LoginPage() {
   const navigate  = useNavigate();
@@ -11,7 +11,7 @@ export default function LoginPage() {
 
   // Kalau sudah login, langsung redirect ke dashboard
   if (isAuthenticated) {
-    navigate("/", { replace: true });
+    navigate("/dashboard", { replace: true });
   }
 
   // ── State ──────────────────────────────────────────────────────────────────
@@ -21,142 +21,137 @@ export default function LoginPage() {
   const [loading,     setLoading]     = useState(false);
   const [error,       setError]       = useState<string | null>(null);
 
-  // Halaman tujuan setelah login (kalau user tadi dicegat ProtectedRoute)
-  const from = (location.state as { from?: Location })?.from?.pathname ?? "/";
+  // Halaman tujuan setelah login
+  const from = (location.state as { from?: Location })?.from?.pathname ?? "/dashboard";
 
-  // ── Submit: sesuai alur sequence diagram ──────────────────────────────────
+  // ── Submit ─────────────────────────────────────────────────────────────────
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
 
-    // Validasi dasar sebelum kirim
-    if (!email.trim())    return setError("Email tidak boleh kosong.");
-    if (!password.trim()) return setError("Password tidak boleh kosong.");
+    if (!email.trim())    return setError("Alamat email wajib diisi.");
+    if (!password.trim()) return setError("Kata sandi wajib diisi.");
 
     setLoading(true);
 
-    // ── Kirim data login → AuthController (mock) ──────────────────────────
-    // Di produksi: ganti dengan fetch("http://localhost:8000/api/login", {...})
-            const result = await login(email.trim(), password);
-        setLoading(false);
+    const result = await login(email.trim(), password);
+    setLoading(false);
 
-        if ('message' in result) {
-        // TypeScript sekarang pasti tahu result.message ada
-        setError(result.message);
-        } else {
-        navigate(from, { replace: true });
-        }
+    if ('message' in result) {
+      setError(result.message);
+    } else {
+      navigate(from, { replace: true });
+    }
   }
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4">
-      <div className="w-full max-w-sm">
-
-        {/* ── Logo & judul ── */}
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary">
-            <Monitor className="h-6 w-6 text-primary-foreground" />
+    <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md">
+        
+        {/* Card Portal */}
+        <div className="overflow-hidden rounded-lg bg-white shadow-md border border-slate-200">
+          
+          {/* Header Card (Bagian Biru/Primary Sekolah) */}
+          <div className="bg-primary px-6 py-8 text-center sm:px-8">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+              <School className="h-7 w-7 text-white" />
+            </div>
+            <h1 className="text-xl font-bold text-white tracking-wide uppercase">
+              Sistem Peminjaman Lab
+            </h1>
+            <p className="mt-1 text-sm font-medium text-primary-foreground/80">
+              SMK SMART AR-RAHMAN
+            </p>
           </div>
-          <h1 className="text-2xl font-semibold text-foreground">LabReserve</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Sistem Informasi Peminjaman Lab Komputer
-          </p>
-        </div>
 
-        {/* ── Card form login ── */}
-        <div className="rounded-xl border border-border bg-background p-6 shadow-card">
-          <h2 className="mb-5 text-base font-semibold text-foreground">
-            Masuk ke akun Anda
-          </h2>
-
-          {/* ── Pesan error (Data tidak valid) ── */}
-          {error && (
-            <div className="mb-4 flex items-start gap-2.5 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} noValidate className="space-y-4">
-
-            {/* ── Field email ── */}
-            <div className="space-y-1.5">
-              <label
-                htmlFor="email"
-                className="text-xs font-medium text-muted-foreground"
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                autoComplete="email"
-                autoFocus
-                value={email}
-                onChange={e => { setEmail(e.target.value); setError(null); }}
-                placeholder="contoh@smk.sch.id"
-                disabled={loading}
-                className="w-full rounded-md border border-input bg-muted px-3 py-2 text-sm transition
-                  placeholder:text-muted-foreground/60
-                  focus:outline-none focus:ring-2 focus:ring-ring
-                  disabled:cursor-not-allowed disabled:opacity-50"
-              />
+          {/* Form Login */}
+          <div className="px-10 py-8 sm:px-10">
+            <div className="mb-6 text-center ">
+              <h2 className="text-lg font-semibold text-slate-900">
+                Login
+              </h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Silakan masukkan email dan kata sandi Anda.
+              </p>
             </div>
 
-            {/* ── Field password ── */}
-            <div className="space-y-1.5">
-              <label
-                htmlFor="password"
-                className="text-xs font-medium text-muted-foreground"
-              >
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPass ? "text" : "password"}
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={e => { setPassword(e.target.value); setError(null); }}
-                  placeholder="Masukkan password"
-                  disabled={loading}
-                  className="w-full rounded-md border border-input bg-muted px-3 py-2 pr-10 text-sm transition
-                    placeholder:text-muted-foreground/60
-                    focus:outline-none focus:ring-2 focus:ring-ring
-                    disabled:cursor-not-allowed disabled:opacity-50"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPass(p => !p)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  aria-label={showPass ? "Sembunyikan password" : "Tampilkan password"}
-                >
-                  {showPass
-                    ? <EyeOff className="h-4 w-4" />
-                    : <Eye    className="h-4 w-4" />
-                  }
-                </button>
+            {/* Pesan error */}
+            {error && (
+              <div className="mb-5 flex items-start gap-2.5 rounded border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-600">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>{error}</span>
               </div>
-            </div>
+            )}
 
-            {/* ── Tombol submit ── */}
-            <Button
-              type="submit"
-              className="w-full gap-2"
-              disabled={loading}
-            >
-              {loading
-                ? <><Loader2 className="h-4 w-4 animate-spin" /> Memverifikasi...</>
-                : "Masuk"
-              }
-            </Button>
-          </form>
+            <form onSubmit={handleSubmit} noValidate className="space-y-5">
+              
+              <div className="space-y-1.5">
+                <label htmlFor="email" className="text-sm font-medium text-slate-700">
+                  Email Terdaftar
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  autoFocus
+                  value={email}
+                  onChange={e => { setEmail(e.target.value); setError(null); }}
+                  placeholder="email@smksmartarrahman.sch.id"
+                  disabled={loading}
+                  className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-slate-50 disabled:text-slate-500"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="password" className="text-sm font-medium text-slate-700">
+                  Kata Sandi
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPass ? "text" : "password"}
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={e => { setPassword(e.target.value); setError(null); }}
+                    placeholder="Masukkan kata sandi"
+                    disabled={loading}
+                    className="block w-full rounded-md border border-slate-300 px-3 py-2 pr-10 text-sm text-slate-900 placeholder-slate-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-slate-50 disabled:text-slate-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(p => !p)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
+                  >
+                    {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <Button 
+                  type="submit" 
+                  className="w-full text-sm font-semibold tracking-wide h-10" 
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sedang Memproses...</>
+                  ) : (
+                    "MASUK"
+                  )}
+                </Button>
+              </div>
+
+            </form>
+          </div>
         </div>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          SMK SMART AR-RAHMAN · {new Date().getFullYear()}
-        </p>
+        {/* Footer */}
+        <div className="mt-6 text-center text-xs text-slate-500">
+          <p>© {new Date().getFullYear()} SMK Smart Ar-Rahman</p>
+    
+        </div>
+
       </div>
     </div>
   );

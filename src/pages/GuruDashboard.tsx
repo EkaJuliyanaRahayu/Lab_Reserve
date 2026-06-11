@@ -42,7 +42,7 @@ export default function GuruDashboard() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-foreground">Dashboard Guru</h1>
+            <h1 className="text-2xl font-semibold text-foreground">Dashboard User</h1>
             <p className="text-sm text-muted-foreground">Selamat datang, {currentUser.name}.</p>
           </div>
           <Button className="gap-2" onClick={() => { setPrefill({}); setFormOpen(true); }}>

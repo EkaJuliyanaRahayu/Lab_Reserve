@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import WeeklyCalendar from "@/components/WeeklyCalendar";
-import BookingForm from "@/components/BookingForm";
+import RoutineScheduleForm from "@/components/RoutineScheduleForm";
 import StatCard from "@/components/StatCard";
 import StatusBadge from "@/components/StatusBadge";
 import { bookings, schedules, getLabName } from "@/data/mockData";
@@ -57,7 +57,10 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <BookingForm open={formOpen} onClose={() => { setFormOpen(false); setConflictSlot(null); }} prefill={prefill} onConflictFound={setConflictSlot} />
+      <RoutineScheduleForm 
+        open={formOpen} 
+        onClose={() => setFormOpen(false)} 
+      />
     </AppLayout>
   );
 }
