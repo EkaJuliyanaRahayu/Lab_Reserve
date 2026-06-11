@@ -34,7 +34,7 @@ export default function BookingPage() {
   const [pdfStatus, setPdfStatus] = useState("all");
 
   // State: modal tolak
-  const [tolakTarget, setTolakTarget] = useState<string | null>(null);
+  const [tolakTarget, setTolakTarget] = useState<{ id: string; teacher: string } | null>(null);
   const [tolakAlasan, setTolakAlasan] = useState("");
 
   // ── Data ────────────────────────────────────────────────────────────────────
@@ -322,7 +322,7 @@ export default function BookingPage() {
                       variant="outline"
                       className="gap-1 text-destructive hover:bg-destructive/10"
                       onClick={() => {
-                        setTolakTarget(b.teacher);
+                        setTolakTarget({ id: b.id, teacher: b.teacher });
                         setTolakAlasan("");
                       }}
                     >
@@ -425,7 +425,7 @@ export default function BookingPage() {
             </h3>
             <p className="mb-3 text-xs text-muted-foreground">
               Berikan alasan penolakan untuk{" "}
-              <strong>{tolakTarget}</strong>
+              <strong>{tolakTarget?.teacher}</strong>
             </p>
             <textarea
               value={tolakAlasan}
@@ -445,7 +445,7 @@ export default function BookingPage() {
                 size="sm"
                 variant="destructive"
                 onClick={() => {
-                  toast.error(`Peminjaman ${tolakTarget} ditolak.`);
+                  toast.error(`Peminjaman dari ${tolakTarget?.teacher} ditolak.`);
                   setTolakTarget(null);
                 }}
               >

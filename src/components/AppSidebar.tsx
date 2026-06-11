@@ -52,7 +52,7 @@ export default function AppSidebar() {
         "fixed inset-y-0 left-0 z-40 flex flex-col transition-all duration-300",
         "bg-primary border-r border-primary-foreground/10 text-primary-foreground", 
         collapsed ? "w-16" : "w-60",
-        "max-md:translate-x-[-100%]",
+        "max-md:-translate-x-full",
         !collapsed && "max-md:translate-x-0"
       )}>
 

@@ -36,7 +36,7 @@ export default function WeeklyCalendar({ selectedLabId, weekStartDate, onSlotCli
       .forEach(b => {
         const bDate = new Date(b.date);
         const dayDiff = Math.floor((bDate.getTime() - weekStartDate.getTime()) / (1000 * 60 * 60 * 24));
-        if (dayDiff >= 0 && dayDiff < 6) {
+        if (dayDiff >= 0 && dayDiff <= 5) {
           for (let h = b.start_hour; h < b.end_hour; h++) {
             map.set(`${dayDiff}-${h}`, { type: b.status === 'approved' ? 'booking' : 'pending', booking: b });
           }

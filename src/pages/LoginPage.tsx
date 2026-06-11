@@ -1,19 +1,21 @@
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Loader2, AlertCircle, School } from "lucide-react";
-import { toast } from "sonner"; // Tambahkan import toast untuk notifikasi
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const { login, isAuthenticated } = useAuth();
 
-  // Kalau sudah login, langsung redirect ke dashboard
-  if (isAuthenticated) {
-    navigate("/dashboard", { replace: true });
-  }
+  // Kalau sudah login, langsung redirect ke dashboard (harus via useEffect, bukan render body)
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [isLoginView, setIsLoginView] = useState(true); // true = Login, false = Sign Up

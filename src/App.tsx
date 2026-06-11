@@ -12,7 +12,7 @@ import LabsPage           from "./pages/LabsPage";
 import ProfilPage         from "./pages/ProfilPage";
 import ManageSchedules    from "./pages/ManageSchedules";
 import NotFound           from "./pages/NotFound";
-import CalenderPublic from "./pages/calenderPublic";
+import CalenderPublic from "./pages/CalenderPublic";
 
 const queryClient = new QueryClient();
 

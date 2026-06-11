@@ -5,7 +5,7 @@ import {
 import { users, User } from "@/data/mockData";
 
 // ── Tipe ────────────────────────────────────────────────────────────────────
-interface AuthUser extends Omit<User, 'password'> {}
+type AuthUser = Omit<User, 'password'>;
 
 interface AuthContextType {
   // data
